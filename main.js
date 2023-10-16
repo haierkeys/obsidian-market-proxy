@@ -134,7 +134,6 @@ function apProxy() {
     this.regedit = function () {
         ap = window.ajaxPromise;
         window.ajaxPromise = function (e) {
-
             if (eisURL(e)) {
                 if (!matchUrl(e)) {
                     return ap(e);
@@ -144,6 +143,7 @@ function apProxy() {
             // new window.Notice("正在通过 ProxyGithub 来代理访问社区插件！")
             return proxy(e)
         }
+        console.log("apProxy 注册成功")
     }
     this.unRegedit = function () {
         window.ajaxPromise = ap;
@@ -166,12 +166,46 @@ function apCapacitor() {
             //     return ap(e);
             // }
         }
-        console.log("apc注册成功")
+        console.log("apCapacitor 注册成功")
     }
     this.unRegedit = function () {
         window.window.Capacitor.registerPlugin("App").request = ap;
     }
 }
+
+
+
+function apElectron() {
+    var ap;
+    this.regedit = function () {
+        if (typeof window.require != "undefined") {
+            ap = window.require("electron").ipcRenderer.send;
+            //debugger
+            console.log(ap)
+            window.require("electron").ipcRenderer.send = function (a, b, e, ...rest) {
+                //debugger
+                // matchUrl(e);
+                if (eisURL(e)) {
+                    matchUrl(e);
+                }
+
+                //new window.Notice("正在通过 ProxyGithub 来代理访问社区插件！")
+                ap(a, b, e, ...rest);
+                // if (matchUrl(e)) {
+                //     return ap(e);
+                // }
+            }
+            console.log("apElectron 注册成功")
+        }
+
+    }
+    this.unRegedit = function () {
+        if (typeof window.require != "undefined") {
+            window.require("electron").ipcRenderer.send = ap;
+        }
+    }
+}
+
 
 function eisURL(e) {
     if (typeof e == "undefined") {
@@ -188,33 +222,6 @@ function eisURL(e) {
     }
 
 }
-
-function apElectron() {
-    var ap;
-    this.regedit = function () {
-        ap = window.require("electron").ipcRenderer.send;
-        //debugger
-        console.log(ap)
-        window.require("electron").ipcRenderer.send = function (a, b, e, ...rest) {
-            //debugger
-            // matchUrl(e);
-            if (eisURL(e)) {
-                matchUrl(e);
-            }
-
-            //new window.Notice("正在通过 ProxyGithub 来代理访问社区插件！")
-            ap(a, b, e, ...rest);
-            // if (matchUrl(e)) {
-            //     return ap(e);
-            // }
-        }
-        console.log("apc注册成功")
-    }
-    this.unRegedit = function () {
-        window.require("electron").ipcRenderer.send = ap;
-    }
-}
-
 
 
 
