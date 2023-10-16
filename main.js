@@ -141,7 +141,7 @@ function apProxy() {
                 }
             }
 
-            new window.Notice("正在通过 ProxyGithub 来代理访问社区插件！")
+            // new window.Notice("正在通过 ProxyGithub 来代理访问社区插件！")
             return proxy(e)
         }
     }
@@ -253,7 +253,7 @@ let apc = new apCapacitor();
 let ape = new apElectron();
 module.exports = class ProxyGithub extends Plugin {
     onload() {
-        new window.Notice("添加 ProxyGithub 代理访问社区插件！");
+        // new window.Notice("添加 ProxyGithub 代理访问社区插件！");
         this.addSettingTab(new ProxyGithubSettingTab(this.app, this));
         ape.regedit();
         apc.regedit();
