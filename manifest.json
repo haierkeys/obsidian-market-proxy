@@ -6,6 +6,6 @@
   "description": "本插件提供插件和主题商店的网络代理功能，旨在解决中国大陆用户无法直接下载和更新插件与主题商店资源的问题，让国内用户能够顺畅使用。",
   "author": "HaierKeys",
   "authorUrl": "https://blog.diybeta.com",
-  "isDesktopOnly": false,
+  "isDesktopOnly": true,
   "fundingUrl": "https://ko-fi.com/haierkeys"
 }
