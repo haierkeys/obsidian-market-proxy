@@ -22,3 +22,4 @@ data.json
 .DS_Store
 /src/dist
 /src/views/dist
+/main.js
