@@ -1,7 +1,7 @@
 {
   "id": "market-proxy",
   "name": "Market Proxy",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "minAppVersion": "1.6.5",
   "description": "为Obsidian插件市场和主题市场提供网络代理功能，解决中国大陆用户无法访问插件市场和主题市场的问题。支持桌面端和移动端。",
   "author": "HaierKeys",
