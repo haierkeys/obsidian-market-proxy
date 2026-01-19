@@ -101,7 +101,7 @@ class ProxyManager {
     const totalProxies = 1 + this.config.backupProxies.length;
     this.currentProxyIndex = (this.currentProxyIndex + 1) % totalProxies;
     
-    console.log(`Market Proxy: Rotating to proxy ${this.currentProxyIndex}: ${this.getCurrentProxy()}`);
+    console.log(`市场代理: 切换到代理 ${this.currentProxyIndex}: ${this.getCurrentProxy()}`);
   }
 
   async checkProxyHealth(): Promise<boolean> {
@@ -123,7 +123,7 @@ class ProxyManager {
       this.config.lastHealthCheck = Date.now();
       return true;
     } catch (error) {
-      console.warn(`Market Proxy: Health check failed for ${this.getCurrentProxy()}`, error);
+      console.warn(`市场代理: 健康检查失败 ${this.getCurrentProxy()}`, error);
       this.config.proxyStatus = "unhealthy";
       this.config.lastHealthCheck = Date.now();
       return false;
@@ -139,7 +139,7 @@ class ProxyManager {
       const isHealthy = await this.checkProxyHealth();
       if (!isHealthy) {
         this.rotateProxy();
-        console.log(`Market Proxy: Proxy unhealthy, rotated to: ${this.getCurrentProxy()}`);
+        console.log(`市场代理: 代理不健康，已切换到: ${this.getCurrentProxy()}`);
       }
       
       this.healthCheckTimeout = setTimeout(() => {
@@ -188,7 +188,7 @@ function UrlRewrite(e: any, proxyManager: ProxyManager): void {
     e.url = proxyManager.getCurrentProxy() + e.url
 
     if ((window as any).Capacitor.isLoggingEnabled) {
-      window.console.info(JSON.stringify({ src: src, proxy: e.url }))
+      window.console.info(JSON.stringify({ 源地址: src, 代理地址: e.url }))
     }
     if (!e.headers) {
       e.headers = {}
@@ -269,12 +269,12 @@ class MarketProxySettingTab extends PluginSettingTab {
     const { containerEl } = this;
     containerEl.empty();
 
-    containerEl.createEl('h2', { text: 'Market Proxy Settings' });
+    containerEl.createEl('h2', { text: '市场代理设置' });
 
     // Enable/Disable toggle
     new Setting(containerEl)
-      .setName('Enable Proxy')
-      .setDesc('Enable or disable the proxy functionality')
+      .setName('启用代理')
+      .setDesc('启用或禁用代理功能')
       .addToggle(toggle => toggle
         .setValue(this.plugin.settings.enabled)
         .onChange(async (value) => {
@@ -284,8 +284,8 @@ class MarketProxySettingTab extends PluginSettingTab {
 
     // Main proxy URL
     new Setting(containerEl)
-      .setName('Main Proxy URL')
-      .setDesc('Primary proxy server URL (e.g., https://gh.llkk.cc/)')
+      .setName('主代理地址')
+      .setDesc('主要代理服务器地址 (例如: https://gh.llkk.cc/)')
       .addText(text => text
         .setPlaceholder('https://gh.llkk.cc/')
         .setValue(this.plugin.settings.proxyUrl)
@@ -296,8 +296,8 @@ class MarketProxySettingTab extends PluginSettingTab {
 
     // Backup proxies
     new Setting(containerEl)
-      .setName('Backup Proxies')
-      .setDesc('List of backup proxy servers (one per line)')
+      .setName('备用代理列表')
+      .setDesc('备用代理服务器列表 (每行一个)')
       .addTextArea(text => text
         .setPlaceholder('https://ghproxy.com/\nhttps://mirror.ghproxy.com/')
         .setValue(this.plugin.settings.backupProxies.join('\n'))
@@ -311,8 +311,8 @@ class MarketProxySettingTab extends PluginSettingTab {
 
     // Health check toggle
     new Setting(containerEl)
-      .setName('Enable Health Check')
-      .setDesc('Automatically check proxy health and rotate if needed')
+      .setName('启用健康检查')
+      .setDesc('自动检查代理健康状况并在需要时切换代理')
       .addToggle(toggle => toggle
         .setValue(this.plugin.settings.enableHealthCheck)
         .onChange(async (value) => {
@@ -322,8 +322,8 @@ class MarketProxySettingTab extends PluginSettingTab {
 
     // Health check interval
     new Setting(containerEl)
-      .setName('Health Check Interval')
-      .setDesc('How often to check proxy health (in hours)')
+      .setName('健康检查间隔')
+      .setDesc('检查代理健康状况的频率 (单位: 小时)')
       .addSlider(slider => slider
         .setLimits(1, 24, 1)
         .setValue(this.plugin.settings.healthCheckInterval / 3600000)
@@ -337,23 +337,23 @@ class MarketProxySettingTab extends PluginSettingTab {
     const status = this.plugin.getStatus();
     if (status) {
       containerEl.createEl('hr');
-      containerEl.createEl('h3', { text: 'Current Status' });
+      containerEl.createEl('h3', { text: '当前状态' });
       
       const statusDiv = containerEl.createEl('div', { cls: 'market-proxy-status' });
       
       const statusText = statusDiv.createEl('p');
       statusText.innerHTML = `
-        <strong>Current Proxy:</strong> ${status.currentProxy}<br>
-        <strong>Status:</strong> <span class="status-${status.status}">${status.status}</span><br>
-        <strong>Last Check:</strong> ${new Date(status.lastCheck).toLocaleString()}
+        <strong>当前代理:</strong> ${status.currentProxy}<br>
+        <strong>状态:</strong> <span class="status-${status.status}">${this.getStatusText(status.status)}</span><br>
+        <strong>最后检查:</strong> ${new Date(status.lastCheck).toLocaleString('zh-CN')}
       `;
 
       // Manual health check button
       new Setting(containerEl)
-        .setName('Manual Health Check')
-        .setDesc('Check the current proxy health immediately')
+        .setName('手动健康检查')
+        .setDesc('立即检查当前代理的健康状况')
         .addButton(button => button
-          .setButtonText('Check Now')
+          .setButtonText('立即检查')
           .setCta()
           .onClick(async () => {
             if (this.plugin.proxyManager) {
@@ -364,10 +364,10 @@ class MarketProxySettingTab extends PluginSettingTab {
 
       // Rotate proxy button
       new Setting(containerEl)
-        .setName('Rotate Proxy')
-        .setDesc('Switch to the next proxy in the list')
+        .setName('切换代理')
+        .setDesc('切换到列表中的下一个代理')
         .addButton(button => button
-          .setButtonText('Rotate')
+          .setButtonText('切换')
           .onClick(async () => {
             if (this.plugin.proxyManager) {
               this.plugin.proxyManager.rotateProxy();
@@ -378,15 +378,24 @@ class MarketProxySettingTab extends PluginSettingTab {
 
     // Reset to defaults button
     new Setting(containerEl)
-      .setName('Reset to Defaults')
-      .setDesc('Reset all settings to default values')
+      .setName('恢复默认设置')
+      .setDesc('将所有设置恢复为默认值')
       .addButton(button => button
-        .setButtonText('Reset')
+        .setButtonText('重置')
         .setWarning()
         .onClick(async () => {
           this.plugin.settings = { ...DEFAULT_PROXY_CONFIG };
           await this.plugin.saveSettings();
           this.display(); // Refresh the settings tab
         }));
+  }
+
+  private getStatusText(status: string): string {
+    switch (status) {
+      case 'healthy': return '健康';
+      case 'unhealthy': return '不健康';
+      case 'unknown': return '未知';
+      default: return status;
+    }
   }
 }
