@@ -1,6 +1,9 @@
 import esbuild from "esbuild";
 import process from "process";
 import builtins from "builtin-modules";
+import sass from "sass";
+import fs from "fs";
+import path from "path";
 
 const banner =
 `/*
@@ -10,6 +13,33 @@ if you want to view the source, please visit the github repository of this plugi
 `;
 
 const prod = (process.argv[2] === "production");
+
+// Compile SCSS to CSS
+function compileStyles() {
+	try {
+		const scssPath = path.join(process.cwd(), "src", "styles.scss");
+		const cssPath = path.join(process.cwd(), "styles.css");
+		
+		if (fs.existsSync(scssPath)) {
+			const result = sass.compile(scssPath, {
+				style: prod ? "compressed" : "expanded",
+				sourceMap: !prod
+			});
+			
+			fs.writeFileSync(cssPath, result.css);
+			console.log(`✓ Compiled SCSS to ${cssPath}`);
+			
+			if (result.sourceMap && !prod) {
+				fs.writeFileSync(`${cssPath}.map`, JSON.stringify(result.sourceMap));
+			}
+		}
+	} catch (error) {
+		console.error("Error compiling SCSS:", error);
+	}
+}
+
+// Compile styles before building
+compileStyles();
 
 const context = await esbuild.context({
 	banner: {
@@ -39,6 +69,18 @@ const context = await esbuild.context({
 	treeShaking: true,
 	outfile: "main.js",
 	minify: prod,
+	plugins: [
+		{
+			name: "scss-watcher",
+			setup(build) {
+				if (!prod) {
+					build.onEnd(() => {
+						compileStyles();
+					});
+				}
+			}
+		}
+	]
 });
 
 if (prod) {

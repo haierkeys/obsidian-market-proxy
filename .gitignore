@@ -8,12 +8,14 @@
 # npm
 node_modules
 
-# Don't include the compiled main.js file in the repo.
+# Don't include the compiled files in the repo.
 # They should be uploaded to GitHub releases instead.
 main.js
-
-# Exclude sourcemaps
+styles.css
 *.map
+
+# Release packages
+*.zip
 
 # obsidian
 data.json
@@ -22,4 +24,13 @@ data.json
 .DS_Store
 /src/dist
 /src/views/dist
-/main.js
+
+# Build directories
+release/
+dist/
+
+# Lock files (use pnpm)
+package-lock.json
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
